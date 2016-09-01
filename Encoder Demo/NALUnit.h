@@ -12,10 +12,12 @@
 
 #pragma once
 
+#ifndef WIN32
 typedef unsigned char BYTE;
 typedef unsigned long ULONG;
 #ifndef NULL
 #define NULL 0
+#endif
 #endif
 
 class NALUnit
@@ -92,8 +94,17 @@ public:
     long GetSE();
     BYTE GetBYTE();
     unsigned long GetBit();
+	bool NoMoreBits()	{ return (m_idx >= m_cBytes) && (m_nBits == 0); }
 
 	const BYTE* StartCodeStart()	{ return m_pStartCodeStart; }
+    bool IsRefPic()
+    {
+        if (m_pStart && (m_pStart[0] & 0x60))
+        {
+            return true;
+        }
+        return false;
+    }
 
 
 private:
@@ -131,7 +142,7 @@ public:
     {
         return m_cy;
     }
-#if 0
+#ifdef WIN32
     long CroppedWidth()
     {
         if (IsRectEmpty(&m_rcFrame))
@@ -161,39 +172,50 @@ public:
 	unsigned int Level()	{ return m_Level; }
 	BYTE Compat()	{ return m_Compatibility; }
 	NALUnit* NALU() {return &m_nalu; }
+    int POCLSBBits()    { return m_pocLSBBits;  }
+    int POCType()       { return m_pocType; }
     
 private:
     NALUnit m_nalu;
     int m_FrameBits;
     long m_cx;
     long m_cy;
-//    RECT m_rcFrame;
+#ifdef WIN32
+    RECT m_rcFrame;
+#endif
 	bool m_bFrameOnly;
 
 	int m_Profile;
 	int m_Level;
 	BYTE m_Compatibility;
+    int m_pocType;
+    int m_pocLSBBits;
 };
 
 // extract frame num from slice headers
 class SliceHeader
 {
 public:
-    SliceHeader(int nBitsFrame)
-    : m_framenum(0),
-      m_nBitsFrame(nBitsFrame)
-    {
-    }
 
-    bool Parse(NALUnit* pnalu);
+    bool Parse(NALUnit* pnalu, SeqParamSet* sps, bool bDeltaPresent);
     int FrameNum()
     {
         return m_framenum;
     }
+    bool IsField()  { return m_bField; }
+    bool IsBottom() { return m_bBottom; }
+    int Delta()     { return m_pocDelta; }
+    int POCLSB()    { return m_poc_lsb; }
 
 private:
     int m_framenum;
     int m_nBitsFrame;
+    bool m_bFrameOnly;
+    
+    bool m_bField;
+    bool m_bBottom;
+    int m_pocDelta;
+    int m_poc_lsb;
 };
 
 // SEI message structure
@@ -218,9 +240,40 @@ public:
     avcCHeader(const BYTE* header, int cBytes);
     NALUnit* sps()      { return &m_sps; }
     NALUnit* pps()      { return &m_pps; }
+	long lengthSize()	{ return m_lengthSize; }
     
 private:
+	long m_lengthSize;
     NALUnit m_sps;
     NALUnit m_pps;
 };
+
+// NB this is NOT general-purpose. This
+// implements only the details that I've seen in
+// iOS encoding (poc type 0 only, and no checks for mmco 5)
+class POCState
+{
+public:
+    POCState();
+    
+    void SetHeader(avcCHeader* avc);
+    bool GetPOC(NALUnit* nal, int* pPOC);
+    int getFrameNum()
+    {
+        return m_frameNum;
+    }
+    int getLastLSB()
+    {
+        return m_lastlsb;
+    }
+private:
+    int m_prevLSB;
+    int m_prevMSB;
+    avcCHeader* m_avc;
+    SeqParamSet m_sps;
+    bool m_deltaPresent;
+    int m_frameNum;
+    int m_lastlsb;
+};
+
 

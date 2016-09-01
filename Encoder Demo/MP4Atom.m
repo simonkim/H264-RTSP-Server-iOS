@@ -86,7 +86,7 @@ static unsigned int to_host(unsigned char* p)
         int64_t offset = _nextChild + cHeader;
         _nextChild += len;
         len -= cHeader;
-        return [MP4Atom atomAt:offset+_offset size:len type:fourcc inFile:_file];
+        return [MP4Atom atomAt:offset+_offset size:(int)len type:fourcc inFile:_file];
     }
     return nil;
 }

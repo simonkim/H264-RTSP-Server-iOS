@@ -50,7 +50,7 @@ NSString* encodeToBase64(NSData* data)
     NSString* s = @"";
     
     const uint8_t* p = (const uint8_t*) [data bytes];
-    int cBytes = [data length];
+    int cBytes = (int)[data length];
     while (cBytes >= 3)
     {
         unsigned long val = (p[0] << 16) + (p[1] << 8) + p[2];
@@ -227,7 +227,7 @@ static void onRTCP(CFSocketRef s,
             
             response = [response stringByAppendingFormat:@"Content-base: rtsp://%s/\r\n", inet_ntoa(localaddr->sin_addr)];
             CFRelease(dlocaladdr);
-            response = [response stringByAppendingFormat:@"Date: %@\r\nContent-Type: application/sdp\r\nContent-Length: %d\r\n\r\n", date, [sdp length] ];
+            response = [response stringByAppendingFormat:@"Date: %@\r\nContent-Type: application/sdp\r\nContent-Length: %d\r\n\r\n", date, (int)[sdp length] ];
             response = [response stringByAppendingString:sdp];
         }
         else if ([cmd caseInsensitiveCompare:@"setup"] == NSOrderedSame)
@@ -239,7 +239,7 @@ static void onRTCP(CFSocketRef s,
             {
                 if ([s length] > 14)
                 {
-                    if ([s compare:@"client-port=" options:0 range:NSMakeRange(0, 12)])
+                    if ([s compare:@"client_port=" options:0 range:NSMakeRange(0, 12)] == NSOrderedSame)
                     {
                         NSString* val = [s substringFromIndex:12];
                         ports = [val componentsSeparatedByString:@"-"];
@@ -249,8 +249,8 @@ static void onRTCP(CFSocketRef s,
             }
             if ([ports count] == 2)
             {
-                int portRTP = [ports[0] integerValue];
-                int portRTCP = [ports[1] integerValue];
+                int portRTP = (int)[ports[0] integerValue];
+                int portRTCP = (int) [ports[1] integerValue];
                 
                 NSString* session_name = [self createSession:portRTP rtcp:portRTCP];
                 if (session_name != nil)
@@ -310,11 +310,11 @@ static void onRTCP(CFSocketRef s,
 {
     NSData* config = [_server getConfigData];
     
-    avcCHeader avcC((const BYTE*)[config bytes], [config length]);
+    avcCHeader avcC((const BYTE*)[config bytes], (int)[config length]);
     SeqParamSet seqParams;
     seqParams.Parse(avcC.sps());
-    int cx = seqParams.EncodedWidth();
-    int cy = seqParams.EncodedHeight();
+    int cx = (int)seqParams.EncodedWidth();
+    int cy = (int)seqParams.EncodedHeight();
     
     NSString* profile_level_id = [NSString stringWithFormat:@"%02x%02x%02x", seqParams.Profile(), seqParams.Compat(), seqParams.Level()];
     
@@ -334,7 +334,7 @@ static void onRTCP(CFSocketRef s,
     int packets = (_server.bitrate / (max_packet_size * 8)) + 1;
     
     sdp = [sdp stringByAppendingFormat:@"m=video 0 RTP/AVP 96\r\nb=TIAS:%d\r\na=maxprate:%d.0000\r\na=control:streamid=1\r\n", _server.bitrate, packets];
-    sdp = [sdp stringByAppendingFormat:@"a=rtpmap:96 H264/90000\r\na=mimetype:string;\"video/H264\"\r\na=framesize:96 %d-%d\r\na=Width:integer;%d\r\na=Height:integer;%di\r\n", cx, cy, cx, cy];
+    sdp = [sdp stringByAppendingFormat:@"a=rtpmap:96 H264/90000\r\na=mimetype:string;\"video/H264\"\r\na=framesize:96 %d-%d\r\na=Width:integer;%d\r\na=Height:integer;%d\r\n", cx, cy, cx, cy];
     sdp = [sdp stringByAppendingFormat:@"a=fmtp:96 packetization-mode=1;profile-level-id=%@;sprop-parameter-sets=%@,%@\r\n", profile_level_id, sps, pps];
     return sdp;
 }
@@ -403,11 +403,11 @@ static void onRTCP(CFSocketRef s,
     const int max_fragment_packet = max_single_packet - 2;
     unsigned char packet[max_packet_size];
     
-    int nNALUs = [data count];
+    int nNALUs = (int)[data count];
     for (int i = 0; i < nNALUs; i++)
     {
         NSData* nalu = [data objectAtIndex:i];
-        int cBytes = [nalu length];
+        int cBytes = (int)[nalu length];
         BOOL bLast = (i == nNALUs-1);
         
         const unsigned char* pSource = (unsigned char*)[nalu bytes];
@@ -457,7 +457,7 @@ static void onRTCP(CFSocketRef s,
                 pDest += 2;
                 memcpy(pDest, pSource, cThis);
                 pDest += cThis;
-                [self sendPacket:packet length:(pDest - packet)];
+                [self sendPacket:packet length:(int)(pDest - packet)];
                 
                 pSource += cThis;
                 cBytes -= cThis;

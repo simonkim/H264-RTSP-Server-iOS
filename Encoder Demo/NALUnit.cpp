@@ -8,8 +8,9 @@
 //
 // Copyright (c) GDCL 2004-2008 http://www.gdcl.co.uk/license.htm
 
-
-
+#ifdef WIN32
+#include "StdAfx.h"
+#endif
 #include "NALUnit.h"
 
 
@@ -211,6 +212,11 @@ NALUnit::GetUE()
     int cZeros = 0;
     while (GetBit() == 0)
     {
+		// check for partial data (Dmitri Vasilyev)
+		if (NoMoreBits())
+		{
+			return 0;
+		}
         cZeros++;
     }
     return GetWord(cZeros) + ((1 << cZeros)-1);
@@ -243,7 +249,9 @@ SeqParamSet::SeqParamSet()
   m_cy(0),
   m_FrameBits(0)
 {
-   // SetRect(&m_rcFrame, 0, 0, 0, 0);
+#ifdef WIN32
+    SetRect(&m_rcFrame, 0, 0, 0, 0);
+#endif
 }
 
 void
@@ -258,7 +266,7 @@ ScalingList(int size, NALUnit* pnalu)
 			long delta = pnalu->GetSE();
 			nextScale = (lastScale + delta + 256) %256;
 		}
-		int scaling_list_j = (nextScale == 0) ? lastScale : nextScale;
+		long scaling_list_j = (nextScale == 0) ? lastScale : nextScale;
 		lastScale = scaling_list_j;
 	}
 }
@@ -276,15 +284,17 @@ SeqParamSet::Parse(NALUnit* pnalu)
     // to get through to the ones we want
     pnalu->ResetBitstream();
 	pnalu->Skip(8);		// type
-	m_Profile = pnalu->GetWord(8);
+	m_Profile = (int)pnalu->GetWord(8);
 	m_Compatibility = (BYTE) pnalu->GetWord(8);
-	m_Level = pnalu->GetWord(8);
+	m_Level = (int)pnalu->GetWord(8);
 
 	/*int seq_param_id =*/ pnalu->GetUE();
 
-	if ((m_Profile == 100) || (m_Profile == 110) || (m_Profile == 122) || (m_Profile == 144))
+	if ((m_Profile == 100) || (m_Profile == 110) || (m_Profile == 122) || (m_Profile == 244) ||
+		(m_Profile == 44) || (m_Profile == 83) || (m_Profile == 86) || (m_Profile == 118) || (m_Profile == 128)
+		)
 	{
-		int chroma_fmt = pnalu->GetUE();
+		int chroma_fmt = (int)pnalu->GetUE();
 		if (chroma_fmt == 3)
 		{
 			pnalu->Skip(1);
@@ -292,10 +302,12 @@ SeqParamSet::Parse(NALUnit* pnalu)
 		/* int bit_depth_luma_minus8 = */ pnalu->GetUE();
 		/* int bit_depth_chroma_minus8 = */ pnalu->GetUE();
 		pnalu->Skip(1);
-		int seq_scaling_matrix_present = pnalu->GetBit();
+		int seq_scaling_matrix_present = (int)pnalu->GetBit();
 		if (seq_scaling_matrix_present)
 		{
-			for (int i = 0; i < 8; i++)
+			// Y, Cr, Cb for 4x4 intra and inter, then 8x8 (just Y unless chroma_fmt is 3)
+			int max_scaling_lists = (chroma_fmt == 3) ? 12 : 8;
+			for (int i = 0; i < max_scaling_lists; i++)
 			{
 				if (pnalu->GetBit())
 				{
@@ -312,24 +324,25 @@ SeqParamSet::Parse(NALUnit* pnalu)
 		}
 	}
 
-    int log2_frame_minus4 = pnalu->GetUE();
+    int log2_frame_minus4 = (int)pnalu->GetUE();
     m_FrameBits = log2_frame_minus4 + 4;
-    int POCtype = pnalu->GetUE();
-    if (POCtype == 0)
+    m_pocType = (int)pnalu->GetUE();
+    if (m_pocType == 0)
     {
-        /*int log2_poc_minus4 =*/ pnalu->GetUE();
-    } else if (POCtype == 1) 
+        int log2_minus4 = (int)pnalu->GetUE();
+        m_pocLSBBits = log2_minus4 + 4;
+    } else if (m_pocType == 1)
     {
         pnalu->Skip(1); // delta always zero
         /*int nsp_offset =*/ pnalu->GetSE();
         /*int nsp_top_to_bottom = */ pnalu->GetSE();
-        int num_ref_in_cycle = pnalu->GetUE();
+        int num_ref_in_cycle = (int)pnalu->GetUE();
         for (int i = 0; i < num_ref_in_cycle; i++)
         {
             /*int sf_offset =*/ pnalu->GetSE();
         }
     } 
-	else if (POCtype != 2)
+	else if (m_pocType != 2)
 	{
 		return false;
 	}
@@ -338,8 +351,8 @@ SeqParamSet::Parse(NALUnit* pnalu)
     /*int num_ref_frames =*/ pnalu->GetUE();
     /*int gaps_allowed =*/ pnalu->GetBit();
 
-    int mbs_width = pnalu->GetUE();
-    int mbs_height = pnalu->GetUE();
+    int mbs_width = (int)pnalu->GetUE();
+    int mbs_height = (int)pnalu->GetUE();
     m_cx = (mbs_width+1) * 16;
     m_cy = (mbs_height+1) * 16;
 
@@ -358,7 +371,7 @@ SeqParamSet::Parse(NALUnit* pnalu)
     }
     pnalu->Skip(1);     // direct 8x8
 
-#if 0
+#ifdef WIN32
     SetRect(&m_rcFrame, 0, 0, 0, 0);
     bool bCrop = pnalu->GetBit() ? true : false;
     if (bCrop) {
@@ -368,10 +381,10 @@ SeqParamSet::Parse(NALUnit* pnalu)
         m_rcFrame.right = pnalu->GetUE() * 2;
         m_rcFrame.top = pnalu->GetUE() * 2;
         m_rcFrame.bottom = pnalu->GetUE() * 2;
-    }
 
-    if (!IsRectEmpty(&m_rcFrame))
-    {
+		// convert from offsets to absolute rect
+		// can't test with IsRectEmpty until after this 
+		// change (Dmitri Vasilyev)
         m_rcFrame.right = m_cx - m_rcFrame.right;
         m_rcFrame.bottom = m_cy - m_rcFrame.bottom;
     }
@@ -382,7 +395,7 @@ SeqParamSet::Parse(NALUnit* pnalu)
     {
         // adjust heights from field to frame
         m_cy *= 2;
-#if 0
+#ifdef WIN32
         m_rcFrame.top *= 2;
         m_rcFrame.bottom *= 2;
 #endif
@@ -395,7 +408,7 @@ SeqParamSet::Parse(NALUnit* pnalu)
 
 // --- slice header --------------------
 bool 
-SliceHeader::Parse(NALUnit* pnalu)
+SliceHeader::Parse(NALUnit* pnalu, SeqParamSet* sps, bool bDeltaPresent)
 {
     switch(pnalu->Type())
     {
@@ -417,7 +430,33 @@ SliceHeader::Parse(NALUnit* pnalu)
     pnalu->GetUE();     // slice type
     pnalu->GetUE();     // pic param set id
 
-    m_framenum = pnalu->GetWord(m_nBitsFrame);
+    m_framenum = (int)pnalu->GetWord(sps->FrameBits());
+    
+    m_bField = m_bBottom = false;
+    if (sps->Interlaced())
+    {
+        m_bField = pnalu->GetBit();
+        if (m_bField)
+        {
+            m_bBottom = pnalu->GetBit();
+        }
+    }
+    if (pnalu->Type() == NALUnit::NAL_IDR_Slice)
+    {
+        /* int idr_pic_id = */ pnalu->GetUE();
+    }
+    m_poc_lsb = 0;
+    if (sps->POCType() == 0)
+    {
+        m_poc_lsb = (int)pnalu->GetWord(sps->POCLSBBits());
+        m_pocDelta = 0;
+        if (bDeltaPresent && !m_bField)
+        {
+            m_pocDelta = (int)pnalu->GetSE();
+        }
+    }
+    
+    
     return true;
 }
 
@@ -440,7 +479,7 @@ SEIMessage::SEIMessage(NALUnit* pnalu)
 	m_length = 0;
 	while (*p == 0xff)
 	{
-		m_type += 255;
+		m_length += 255;
 		p++;
 	}
 	m_length += *p;
@@ -456,6 +495,8 @@ avcCHeader::avcCHeader(const BYTE* header, int cBytes)
     }
     const BYTE* pEnd = header + cBytes;
     
+	m_lengthSize = (header[4] & 3) + 1;
+
     int cSeq = header[5] & 0x1f;
     header += 6;
     for (int i = 0; i < cSeq; i++)
@@ -490,6 +531,65 @@ avcCHeader::avcCHeader(const BYTE* header, int cBytes)
         m_pps = n;
     }
 }
+
+
+POCState::POCState()
+: m_prevLSB(0),
+  m_prevMSB(0)
+{
+}
+
+void POCState::SetHeader(avcCHeader* avc)
+{
+    m_avc = avc;
+    m_sps.Parse(m_avc->sps());
+    NALUnit* pps = avc->pps();
+    pps->ResetBitstream();
+    /* int ppsid = */ pps->GetUE();
+    /* int spsid = */ pps->GetUE();
+    pps->Skip(1);
+    m_deltaPresent = pps->GetBit() ? true : false;
+}
+
+bool POCState::GetPOC(NALUnit* nal, int* pPOC)
+{
+    int maxlsb = 1 << (m_sps.POCLSBBits());
+    SliceHeader slice;
+    if (slice.Parse(nal, &m_sps, m_deltaPresent))
+    {
+        m_frameNum = slice.FrameNum();
+        
+        int prevMSB = m_prevMSB;
+        int prevLSB = m_prevLSB;
+        if (nal->Type() == NALUnit::NAL_IDR_Slice)
+        {
+            prevLSB = prevMSB= 0;
+        }
+        // !! mmoc == 5
+        
+        int lsb = slice.POCLSB();
+        int MSB = prevMSB;
+        if ((lsb < prevLSB) && ((prevLSB - lsb) >= (maxlsb / 2)))
+        {
+            MSB = prevMSB + maxlsb;
+        }
+        else if ((lsb > prevLSB) && ((lsb - prevLSB) > (maxlsb/2)))
+        {
+            MSB = prevMSB - maxlsb;
+        }
+        if (nal->IsRefPic())
+        {
+            m_prevLSB = lsb;
+            m_prevMSB = MSB;
+        }
+        
+        *pPOC = MSB + lsb;
+        m_lastlsb = lsb;
+        return true;
+    }
+    return false;
+}
+
 
 
 

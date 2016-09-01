@@ -17,6 +17,31 @@ static unsigned int to_host(unsigned char* p)
 #define OUTPUT_FILE_SWITCH_POINT (50 * 1024 * 1024)  // 50 MB switch point
 #define MAX_FILENAME_INDEX  5                       // filenames "capture1.mp4" wraps at capture5.mp4
 
+// store the calculated POC with a frame ready for timestamp assessment
+// (recalculating POC out of order will get an incorrect result)
+@interface EncodedFrame : NSObject
+
+- (EncodedFrame*) initWithData:(NSArray*) nalus andPOC:(int) poc;
+
+@property int poc;
+@property NSArray* frame;
+
+@end
+
+@implementation EncodedFrame
+
+@synthesize poc;
+@synthesize frame;
+
+- (EncodedFrame*) initWithData:(NSArray*) nalus andPOC:(int) POC
+{
+    self.poc = POC;
+    self.frame = nalus;
+    return self;
+}
+
+@end
+
 
 @interface AVEncoder ()
 
@@ -42,6 +67,10 @@ static unsigned int to_host(unsigned char* p)
     NSData* _avcC;
     int _lengthSize;
     
+    // POC
+    POCState _pocState;
+    int _prevPOC;
+    
     // location of mdat
     BOOL _foundMDAT;
     uint64_t _posMDAT;
@@ -56,6 +85,9 @@ static unsigned int to_host(unsigned char* p)
     
     // FIFO for frame times
     NSMutableArray* _times;
+    
+    // FIFO for frames awaiting time assigment
+    NSMutableArray* _frames;
     
     encoder_handler_t _outputBlock;
     param_handler_t _paramsBlock;
@@ -114,7 +146,7 @@ static unsigned int to_host(unsigned char* p)
     NSFileHandle* file = [NSFileHandle fileHandleForReadingAtPath:path];
     struct stat s;
     fstat([file fileDescriptor], &s);
-    MP4Atom* movie = [MP4Atom atomAt:0 size:s.st_size type:(OSType)('file') inFile:file];
+    MP4Atom* movie = [MP4Atom atomAt:0 size:(int)s.st_size type:(OSType)('file') inFile:file];
     MP4Atom* moov = [movie childOfType:(OSType)('moov') startAt:0];
     MP4Atom* trak = nil;
     if (moov != nil)
@@ -169,12 +201,16 @@ static unsigned int to_host(unsigned char* p)
             if (esd != nil)
             {
                 // this is the avcC record that we are looking for
-                _avcC = [esd readAt:0 size:esd.length];
+                _avcC = [esd readAt:0 size:(int)esd.length];
                 if (_avcC != nil)
                 {
                     // extract size of length field
                     unsigned char* p = (unsigned char*)[_avcC bytes];
                     _lengthSize = (p[4] & 3) + 1;
+                    
+                    avcCHeader avc((const BYTE*)[_avcC bytes], (int)[_avcC length]);
+                    _pocState.SetHeader(&avc);
+                    
                     return YES;
                 }
             }
@@ -229,6 +265,7 @@ static unsigned int to_host(unsigned char* p)
     CMTime prestime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
     double dPTS = (double)(prestime.value) / prestime.timescale;
     NSNumber* pts = [NSNumber numberWithDouble:dPTS];
+    
     @synchronized(_times)
     {
         [_times addObject:pts];
@@ -337,7 +374,7 @@ static unsigned int to_host(unsigned char* p)
     
     struct stat s;
     fstat([_inputFile fileDescriptor], &s);
-    int cReady = s.st_size - [_inputFile offsetInFile];
+    int cReady = (int)(s.st_size - [_inputFile offsetInFile]);
     
     // locate the mdat atom if needed
     while (!_foundMDAT && (cReady > 8))
@@ -376,37 +413,106 @@ static unsigned int to_host(unsigned char* p)
     [self readAndDeliver:cReady];
 }
 
-- (void) onEncodedFrame
+- (void) deliverFrame: (NSArray*) frame withTime:(double) pts
 {
-    double pts = 0;
-    @synchronized(_times)
+
+    if (_firstpts < 0)
     {
-        if ([_times count] > 0)
+        _firstpts = pts;
+    }
+    if ((pts - _firstpts) < 1)
+    {
+        int bytes = 0;
+        for (NSData* data in frame)
         {
-            pts = [_times[0] doubleValue];
-            [_times removeObjectAtIndex:0];
-            if (_firstpts < 0)
-            {
-                _firstpts = pts;
-            }
-            if ((pts - _firstpts) < 1)
-            {
-                int bytes = 0;
-                for (NSData* data in _pendingNALU)
-                {
-                    bytes += [data length];
-                }
-                _bitspersecond += (bytes * 8);
-            }
+            bytes += [data length];
+        }
+        _bitspersecond += (bytes * 8);
+    }
+ 
+    if (_outputBlock != nil)
+    {
+        _outputBlock(frame, pts);
+    }
+    
+}
+
+- (void) processStoredFrames
+{
+    // first has the last timestamp and rest use up timestamps from the start
+    int n = 0;
+    for (EncodedFrame* f in _frames)
+    {
+        int index = 0;
+        if (n == 0)
+        {
+            index = (int) [_frames count] - 1;
         }
         else
         {
-            NSLog(@"no pts for buffer");
+            index = n-1;
+        }
+        double pts = 0;
+        @synchronized(_times)
+        {
+            if ([_times count] > 0)
+            {
+                pts = [_times[index] doubleValue];
+            }
+        }
+        [self deliverFrame:f.frame withTime:pts];
+        n++;
+    }
+    @synchronized(_times)
+    {
+        [_times removeObjectsInRange:NSMakeRange(0, [_frames count])];
+    }
+    [_frames removeAllObjects];
+}
+
+- (void) onEncodedFrame
+{
+    int poc = 0;
+    for (NSData* d in _pendingNALU)
+    {
+        NALUnit nal((const BYTE*)[d bytes], (int)[d length]);
+        if (_pocState.GetPOC(&nal, &poc))
+        {
+            break;
         }
     }
-    if (_outputBlock != nil)
+    
+    if (poc == 0)
     {
-        _outputBlock(_pendingNALU, pts);
+        [self processStoredFrames];
+        double pts = 0;
+        int index = 0;
+        @synchronized(_times)
+        {
+            if ([_times count] > 0)
+            {
+                pts = [_times[index] doubleValue];
+                [_times removeObjectAtIndex:index];
+            }
+        }
+        [self deliverFrame:_pendingNALU withTime:pts];
+        _prevPOC = 0;
+    }
+    else
+    {
+        EncodedFrame* f = [[EncodedFrame alloc] initWithData:_pendingNALU andPOC:poc];
+        if (poc > _prevPOC)
+        {
+            // all pending frames come before this, so share out the
+            // timestamps in order of POC
+            [self processStoredFrames];
+            _prevPOC = poc;
+        }
+        if (_frames == nil)
+        {
+            _frames = [NSMutableArray arrayWithCapacity:2];
+        }
+        [_frames addObject:f];
     }
 }
 
@@ -420,29 +526,39 @@ static unsigned int to_host(unsigned char* p)
 
     if (_pendingNALU)
     {
-        NALUnit nal(pNal, [nalu length]);
+        NALUnit nal(pNal, (int)[nalu length]);
         
         // we have existing data —is this the same frame?
         // typically there are a couple of NALUs per frame in iOS encoding.
         // This is not general-purpose: it assumes that arbitrary slice ordering is not allowed.
         BOOL bNew = NO;
-        if ((idc != _prev_nal_idc) && ((idc * _prev_nal_idc) == 0))
+        
+        // sei and param sets go with following nalu
+        if (_prev_nal_type < 6)
         {
-            bNew = YES;
-        }
-        else if ((naltype != _prev_nal_type) && ((naltype == 5) || (_prev_nal_type == 5)))
-        {
-            bNew = YES;
-        }
-        else if ((naltype >= 1) && (naltype <= 5))
-        {
-            nal.Skip(8);
-            int first_mb = nal.GetUE();
-            if (first_mb == 0)
+            if (naltype >= 6)
             {
                 bNew = YES;
             }
+            else if ((idc != _prev_nal_idc) && ((idc == 0) || (_prev_nal_idc == 0)))
+            {
+                bNew = YES;
+            }
+            else if ((naltype != _prev_nal_type) && (naltype == 5))
+            {
+                bNew = YES;
+            }
+            else if ((naltype >= 1) && (naltype <= 5))
+            {
+                nal.Skip(8);
+                int first_mb = (int)nal.GetUE();
+                if (first_mb == 0)
+                {
+                    bNew = YES;
+                }
+            }
         }
+        
         if (bNew)
         {
             [self onEncodedFrame];
