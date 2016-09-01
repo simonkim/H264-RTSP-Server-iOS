@@ -20,11 +20,16 @@
     [self startPreview];
 }
 
+- (void)viewDidLayoutSubviews
+{
+    AVCaptureVideoPreviewLayer* preview = [[CameraServer server] getPreviewLayer];
+    preview.frame = self.cameraView.bounds;
+}
+
 - (void) willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     // this is not the most beautiful animation...
     AVCaptureVideoPreviewLayer* preview = [[CameraServer server] getPreviewLayer];
-    preview.frame = self.cameraView.bounds;
     [[preview connection] setVideoOrientation:toInterfaceOrientation];
 }
 
@@ -32,7 +37,6 @@
 {
     AVCaptureVideoPreviewLayer* preview = [[CameraServer server] getPreviewLayer];
     [preview removeFromSuperlayer];
-    preview.frame = self.cameraView.bounds;
     [[preview connection] setVideoOrientation:UIInterfaceOrientationPortrait];
     
     [self.cameraView.layer addSublayer:preview];
