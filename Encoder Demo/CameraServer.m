@@ -23,6 +23,9 @@ static CameraServer* theServer;
     
     RTSPServer* _rtsp;
 }
+@property (nonatomic) NSString *captureSessionPreset;
+@property (nonatomic) CGSize videoSize;
+@property (nonatomic) AVCaptureDevicePosition captureDevicePosition;
 @end
 
 
@@ -42,6 +45,45 @@ static CameraServer* theServer;
     return theServer;
 }
 
+- (id) init
+{
+    if ( self = [super init]) {
+        self.captureSessionPreset = AVCaptureSessionPreset1920x1080;
+        self.captureDevicePosition = AVCaptureDevicePositionBack;
+    }
+    return self;
+}
+
+- (void) setCaptureSessionPreset:(NSString *)captureSessionPreset
+{
+    CGSize videoSize = CGSizeMake(640, 480);
+    
+    if (captureSessionPreset == AVCaptureSessionPreset640x480) {
+        videoSize = CGSizeMake(640, 480);
+    } else if (captureSessionPreset == AVCaptureSessionPreset1920x1080) {
+        videoSize = CGSizeMake(1920, 1080);
+    } else {
+        captureSessionPreset = AVCaptureSessionPreset1280x720;
+        videoSize = CGSizeMake(1280, 720);
+    }
+    _captureSessionPreset = captureSessionPreset;
+    self.videoSize = videoSize;
+}
+
+- (AVCaptureDevice *) captureDevice
+{
+    AVCaptureDevice* __block result = nil;
+    NSArray *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+    [devices enumerateObjectsUsingBlock:^(AVCaptureDevice *  _Nonnull device, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (device.position == self.captureDevicePosition) {
+            result = device;
+            *stop = YES;
+        }
+    }];
+    
+    return result;
+}
+
 - (void) startup
 {
     if (_session == nil)
@@ -50,7 +92,9 @@ static CameraServer* theServer;
         
         // create capture device with video input
         _session = [[AVCaptureSession alloc] init];
-        AVCaptureDevice* dev = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+        [_session beginConfiguration];
+        
+        AVCaptureDevice* dev = [self captureDevice];
         AVCaptureDeviceInput* input = [AVCaptureDeviceInput deviceInputWithDevice:dev error:nil];
         [_session addInput:input];
         
@@ -65,7 +109,7 @@ static CameraServer* theServer;
         [_session addOutput:_output];
         
         // create an encoder
-        _encoder = [AVEncoder encoderForHeight:480 andWidth:720];
+        _encoder = [AVEncoder encoderForHeight:self.videoSize.height andWidth:self.videoSize.width];
         [_encoder encodeWithBlock:^int(NSArray* data, double pts) {
             if (_rtsp != nil)
             {
@@ -78,6 +122,8 @@ static CameraServer* theServer;
             return 0;
         }];
         
+        _session.sessionPreset = self.captureSessionPreset;
+        [_session commitConfiguration];
         // start capture and a preview layer
         [_session startRunning];
         
