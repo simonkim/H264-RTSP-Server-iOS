@@ -16,7 +16,7 @@
 {
     // Override point for customization after application launch.
     [[CameraServer server] startup];
-    
+    [[UIApplication sharedApplication] setIdleTimerDisabled: YES];
     return YES;
 }
 							
