@@ -19,9 +19,6 @@
 		841255C716A035F1001749D9 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 841255C616A035F1001749D9 /* AVFoundation.framework */; };
 		841255C916A035F9001749D9 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 841255C816A035F9001749D9 /* CoreMedia.framework */; };
 		841255CB16A09114001749D9 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 841255CA16A09114001749D9 /* CoreVideo.framework */; };
-		841255CE16A47A7D001749D9 /* AVEncoder.mm in Sources */ = {isa = PBXBuildFile; fileRef = 841255CD16A47A7D001749D9 /* AVEncoder.mm */; };
-		841255D116A4848E001749D9 /* VideoEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 841255D016A4848E001749D9 /* VideoEncoder.m */; };
-		841255D616A5AB8B001749D9 /* MP4Atom.m in Sources */ = {isa = PBXBuildFile; fileRef = 841255D516A5AB8B001749D9 /* MP4Atom.m */; };
 		841255D916A714B7001749D9 /* NALUnit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 841255D716A714B7001749D9 /* NALUnit.cpp */; };
 		841255DC16A85472001749D9 /* RTSPServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 841255DB16A85472001749D9 /* RTSPServer.m */; };
 		841255E516B14E45001749D9 /* RTSPClientConnection.mm in Sources */ = {isa = PBXBuildFile; fileRef = 841255E416B14E45001749D9 /* RTSPClientConnection.mm */; };
@@ -31,7 +28,6 @@
 		F4D799781D83F36C006A5D8D /* CMVideoFormatDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D799771D83F36C006A5D8D /* CMVideoFormatDescription.swift */; };
 		F4D7997A1D83F950006A5D8D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D799791D83F950006A5D8D /* AppDelegate.swift */; };
 		F4D7997D1D84047C006A5D8D /* VTEncoderVideoStreamer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D7997C1D84047C006A5D8D /* VTEncoderVideoStreamer.swift */; };
-		F4D799811D842221006A5D8D /* VideoStreamer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D799801D842221006A5D8D /* VideoStreamer.swift */; };
 		F4F4AEAE1D845E82006EA124 /* RTSPServerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F4AEAD1D845E82006EA124 /* RTSPServerTest.swift */; };
 		F4F4AEB71D845FC6006EA124 /* CMVideoFormatDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D799771D83F36C006A5D8D /* CMVideoFormatDescription.swift */; };
 		F4F4AEB81D845FD4006EA124 /* VTCompressionSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D799751D83EF81006A5D8D /* VTCompressionSession.swift */; };
@@ -67,12 +63,6 @@
 		841255C616A035F1001749D9 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		841255C816A035F9001749D9 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		841255CA16A09114001749D9 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
-		841255CC16A47A7D001749D9 /* AVEncoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVEncoder.h; sourceTree = "<group>"; };
-		841255CD16A47A7D001749D9 /* AVEncoder.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AVEncoder.mm; sourceTree = "<group>"; };
-		841255CF16A4848E001749D9 /* VideoEncoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoEncoder.h; sourceTree = "<group>"; };
-		841255D016A4848E001749D9 /* VideoEncoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoEncoder.m; sourceTree = "<group>"; };
-		841255D416A5AB8B001749D9 /* MP4Atom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MP4Atom.h; sourceTree = "<group>"; };
-		841255D516A5AB8B001749D9 /* MP4Atom.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MP4Atom.m; sourceTree = "<group>"; };
 		841255D716A714B7001749D9 /* NALUnit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NALUnit.cpp; sourceTree = "<group>"; };
 		841255D816A714B7001749D9 /* NALUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NALUnit.h; sourceTree = "<group>"; };
 		841255DA16A85472001749D9 /* RTSPServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RTSPServer.h; sourceTree = "<group>"; };
@@ -88,7 +78,6 @@
 		F4D799771D83F36C006A5D8D /* CMVideoFormatDescription.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CMVideoFormatDescription.swift; path = AVEncoderVideoToolbox/CMVideoFormatDescription.swift; sourceTree = "<group>"; };
 		F4D799791D83F950006A5D8D /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F4D7997C1D84047C006A5D8D /* VTEncoderVideoStreamer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = VTEncoderVideoStreamer.swift; path = AVEncoderVideoToolbox/VTEncoderVideoStreamer.swift; sourceTree = "<group>"; };
-		F4D799801D842221006A5D8D /* VideoStreamer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoStreamer.swift; sourceTree = "<group>"; };
 		F4F4AEAB1D845E81006EA124 /* RTSPServerTest.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RTSPServerTest.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4F4AEAD1D845E82006EA124 /* RTSPServerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RTSPServerTest.swift; sourceTree = "<group>"; };
 		F4F4AEAF1D845E82006EA124 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -161,7 +150,6 @@
 				841255BF16A035E3001749D9 /* EncoderDemoViewController.m */,
 				846119C516D3BF8D00468D98 /* CameraServer.h */,
 				846119C616D3BF8D00468D98 /* CameraServer.m */,
-				F4D799801D842221006A5D8D /* VideoStreamer.swift */,
 				841255DD16A85477001749D9 /* RTSP */,
 				841255D316A57847001749D9 /* AVEncoder */,
 				F48866E81D713F2B004E5CDA /* AVEncoderVideoToolbox */,
@@ -189,12 +177,6 @@
 			children = (
 				841255D716A714B7001749D9 /* NALUnit.cpp */,
 				841255D816A714B7001749D9 /* NALUnit.h */,
-				841255CC16A47A7D001749D9 /* AVEncoder.h */,
-				841255CD16A47A7D001749D9 /* AVEncoder.mm */,
-				841255CF16A4848E001749D9 /* VideoEncoder.h */,
-				841255D016A4848E001749D9 /* VideoEncoder.m */,
-				841255D416A5AB8B001749D9 /* MP4Atom.h */,
-				841255D516A5AB8B001749D9 /* MP4Atom.m */,
 			);
 			name = AVEncoder;
 			sourceTree = "<group>";
@@ -341,16 +323,12 @@
 			files = (
 				F4D799781D83F36C006A5D8D /* CMVideoFormatDescription.swift in Sources */,
 				841255C016A035E3001749D9 /* EncoderDemoViewController.m in Sources */,
-				841255CE16A47A7D001749D9 /* AVEncoder.mm in Sources */,
-				841255D116A4848E001749D9 /* VideoEncoder.m in Sources */,
 				F4F4AEBD1D846B74006EA124 /* VTEncoder.swift in Sources */,
 				F4D7997D1D84047C006A5D8D /* VTEncoderVideoStreamer.swift in Sources */,
-				841255D616A5AB8B001749D9 /* MP4Atom.m in Sources */,
 				841255D916A714B7001749D9 /* NALUnit.cpp in Sources */,
 				F4D7997A1D83F950006A5D8D /* AppDelegate.swift in Sources */,
 				841255DC16A85472001749D9 /* RTSPServer.m in Sources */,
 				841255E516B14E45001749D9 /* RTSPClientConnection.mm in Sources */,
-				F4D799811D842221006A5D8D /* VideoStreamer.swift in Sources */,
 				F4F4AEBA1D84656B006EA124 /* NALUtil.swift in Sources */,
 				841399FA16B1842B00FAD610 /* RTSPMessage.m in Sources */,
 				846119C716D3BF8D00468D98 /* CameraServer.m in Sources */,
