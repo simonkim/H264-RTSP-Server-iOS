@@ -16,7 +16,7 @@
 
 @interface CameraServer : NSObject
 
-+ (CameraServer*) server;
++ (CameraServer*) server NS_SWIFT_NAME(server());
 - (void) startup;
 - (void) shutdown;
 - (NSString*) getURL;
