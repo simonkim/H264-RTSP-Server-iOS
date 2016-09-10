@@ -8,6 +8,13 @@
 
 #import "AVEncoder.h"
 #import "NALUnit.h"
+#import "AVFoundation/AVAssetWriter.h"
+#import "AVFoundation/AVAssetWriterInput.h"
+#import "AVFoundation/AVMediaFormat.h"
+#import "AVFoundation/AVVideoSettings.h"
+#import "sys/stat.h"
+#import "VideoEncoder.h"
+#import "MP4Atom.h"
 
 static unsigned int to_host(unsigned char* p)
 {
