@@ -28,6 +28,7 @@
 		841399FA16B1842B00FAD610 /* RTSPMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 841399F916B1842B00FAD610 /* RTSPMessage.m */; };
 		846119C716D3BF8D00468D98 /* CameraServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 846119C616D3BF8D00468D98 /* CameraServer.m */; };
 		F4D7997A1D83F950006A5D8D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D799791D83F950006A5D8D /* AppDelegate.swift */; };
+		F4D799811D842221006A5D8D /* VideoStreamer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D799801D842221006A5D8D /* VideoStreamer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -64,7 +65,8 @@
 		846119C516D3BF8D00468D98 /* CameraServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraServer.h; sourceTree = "<group>"; };
 		846119C616D3BF8D00468D98 /* CameraServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CameraServer.m; sourceTree = "<group>"; };
 		F4D799791D83F950006A5D8D /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		F4D7997B1D8400C8006A5D8D /* Encoder Demo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Encoder Demo-Bridging-Header.h"; sourceTree = "<group>"; };
+		F4D799801D842221006A5D8D /* VideoStreamer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoStreamer.swift; sourceTree = "<group>"; };
+		F4D799821D84224D006A5D8D /* Encoder Demo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Encoder Demo-Bridging-Header.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -123,6 +125,7 @@
 				841255BF16A035E3001749D9 /* EncoderDemoViewController.m */,
 				846119C516D3BF8D00468D98 /* CameraServer.h */,
 				846119C616D3BF8D00468D98 /* CameraServer.m */,
+				F4D799801D842221006A5D8D /* VideoStreamer.swift */,
 				841255DD16A85477001749D9 /* RTSP */,
 				841255D316A57847001749D9 /* AVEncoder */,
 				841255A716A035E3001749D9 /* Supporting Files */,
@@ -133,7 +136,7 @@
 		841255A716A035E3001749D9 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				F4D7997B1D8400C8006A5D8D /* Encoder Demo-Bridging-Header.h */,
+				F4D799821D84224D006A5D8D /* Encoder Demo-Bridging-Header.h */,
 				841255A816A035E3001749D9 /* Encoder Demo-Info.plist */,
 				841255A916A035E3001749D9 /* InfoPlist.strings */,
 				841255AE16A035E3001749D9 /* Encoder Demo-Prefix.pch */,
@@ -247,6 +250,7 @@
 				F4D7997A1D83F950006A5D8D /* AppDelegate.swift in Sources */,
 				841255DC16A85472001749D9 /* RTSPServer.m in Sources */,
 				841255E516B14E45001749D9 /* RTSPClientConnection.mm in Sources */,
+				F4D799811D842221006A5D8D /* VideoStreamer.swift in Sources */,
 				841399FA16B1842B00FAD610 /* RTSPMessage.m in Sources */,
 				846119C716D3BF8D00468D98 /* CameraServer.m in Sources */,
 			);

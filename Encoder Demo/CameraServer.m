@@ -19,9 +19,6 @@ static CameraServer* theServer;
     AVCaptureVideoDataOutput* _output;
     dispatch_queue_t _captureQueue;
     
-    AVEncoder* _encoder;
-    
-    RTSPServer* _rtsp;
 }
 @property (nonatomic) NSString *captureSessionPreset;
 @property (nonatomic) CGSize videoSize;
@@ -109,18 +106,7 @@ static CameraServer* theServer;
         [_session addOutput:_output];
         
         // create an encoder
-        _encoder = [AVEncoder encoderForHeight:self.videoSize.height andWidth:self.videoSize.width];
-        [_encoder encodeWithBlock:^int(NSArray* data, double pts) {
-            if (_rtsp != nil)
-            {
-                _rtsp.bitrate = _encoder.bitspersecond;
-                [_rtsp onVideoData:data time:pts];
-            }
-            return 0;
-        } onParams:^int(NSData *data) {
-            _rtsp = [RTSPServer setupListener:data];
-            return 0;
-        }];
+        [self.delegate cameraServer:self willBeginCaptureWithSize:self.videoSize];
         
         _session.sessionPreset = self.captureSessionPreset;
         [_session commitConfiguration];
@@ -136,7 +122,7 @@ static CameraServer* theServer;
 - (void) captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
 {
     // pass frame to encoder
-    [_encoder encodeFrame:sampleBuffer];
+    [self.delegate cameraServer:self didCapture:sampleBuffer];
 }
 
 - (void) shutdown
@@ -147,14 +133,8 @@ static CameraServer* theServer;
         [_session stopRunning];
         _session = nil;
     }
-    if (_rtsp)
-    {
-        [_rtsp shutdownServer];
-    }
-    if (_encoder)
-    {
-        [ _encoder shutdown];
-    }
+    [self.delegate cameraServerDidStop:self];
+    
 }
 
 - (NSString*) getURL

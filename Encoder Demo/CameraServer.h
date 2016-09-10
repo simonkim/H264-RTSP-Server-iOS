@@ -14,7 +14,16 @@
 #import "AVFoundation/AVCaptureVideoPreviewLayer.h"
 #import "AVFoundation/AVMediaFormat.h"
 
+@class CameraServer;
+
+@protocol VideoCaptureDelegate
+- (void) cameraServer:(CameraServer *) server willBeginCaptureWithSize:(CGSize) size;
+- (void) cameraServer:(CameraServer *) server didCapture:(CMSampleBufferRef) sampleBuffer;
+- (void) cameraServerDidStop:(CameraServer *) server;
+@end
+
 @interface CameraServer : NSObject
+@property (nonatomic, weak) id<VideoCaptureDelegate> delegate;
 
 + (CameraServer*) server NS_SWIFT_NAME(server());
 - (void) startup;
