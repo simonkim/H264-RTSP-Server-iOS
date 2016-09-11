@@ -20,7 +20,7 @@ class NALUtil {
         var result: Int = 0
         
         for i in 0...(headerLength - 1) {
-            result |= Int(pointer[i]) << ((headerLength - 1) - i) * 8
+            result |= Int(pointer[i]) << (((headerLength - 1) - i) * 8)
         }
         return result
     }
