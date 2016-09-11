@@ -25,7 +25,7 @@ struct BitrateMeasure {
     }
 }
 
-class VTEncoderVideoStreamer: VideoCaptureDelegate {
+class VTEncoderVideoStreamer {
     var rtspServer: RTSPServer?
     
     var videoSize: CGSize = CGSize()
@@ -48,7 +48,6 @@ class VTEncoderVideoStreamer: VideoCaptureDelegate {
 
                 self.rtspServer?.bitrate = Int32(self.bpsMeter.bps)
                 self.rtspServer?.onVideoData(dataArray, time: pts)
-                
             }
         }
         
@@ -61,15 +60,12 @@ class VTEncoderVideoStreamer: VideoCaptureDelegate {
         return encoder
     }()
     
-    func cameraServer(_ server: CameraServer!, willBeginCaptureWith size: CGSize) {
-        self.videoSize = size
-    }
     
-    func cameraServer(_ server: CameraServer!, didCapture sampleBuffer: CMSampleBuffer!) {
+    func add(sampleBuffer: CMSampleBuffer!) {
         encoder.encode(sampleBuffer: sampleBuffer)
     }
     
-    func cameraServerDidStop(_ server: CameraServer!) {
+    func stop() {
         encoder.close()
     }
 

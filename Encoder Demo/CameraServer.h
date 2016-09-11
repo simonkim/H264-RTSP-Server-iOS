@@ -16,14 +16,13 @@
 
 @class CameraServer;
 
-@protocol VideoCaptureDelegate
-- (void) cameraServer:(CameraServer *) server willBeginCaptureWithSize:(CGSize) size;
-- (void) cameraServer:(CameraServer *) server didCapture:(CMSampleBufferRef) sampleBuffer;
-- (void) cameraServerDidStop:(CameraServer *) server;
+@protocol CaptureServiceDelegate
+- (void) captureService:(CameraServer *) service configureSession:(AVCaptureSession *) session;
+- (void) captureServiceDidStop:(CameraServer *) service;
 @end
 
 @interface CameraServer : NSObject
-@property (nonatomic, weak) id<VideoCaptureDelegate> delegate;
+@property (nonatomic, weak) id<CaptureServiceDelegate> delegate;
 
 + (CameraServer*) server NS_SWIFT_NAME(server());
 - (void) startup;

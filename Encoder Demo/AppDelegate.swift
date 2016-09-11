@@ -12,12 +12,12 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
     
     var window: UIWindow?
-    var videoStreamer = VTEncoderVideoStreamer()
+    var captureServiceDelegate = AVCapture()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
 
-        CameraServer.server().delegate = videoStreamer
+        CameraServer.server().delegate = captureServiceDelegate
         CameraServer.server().startup()
         application.isIdleTimerDisabled = true
         return true

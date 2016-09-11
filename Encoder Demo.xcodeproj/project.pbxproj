@@ -24,6 +24,9 @@
 		841255E516B14E45001749D9 /* RTSPClientConnection.mm in Sources */ = {isa = PBXBuildFile; fileRef = 841255E416B14E45001749D9 /* RTSPClientConnection.mm */; };
 		841399FA16B1842B00FAD610 /* RTSPMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 841399F916B1842B00FAD610 /* RTSPMessage.m */; };
 		846119C716D3BF8D00468D98 /* CameraServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 846119C616D3BF8D00468D98 /* CameraServer.m */; };
+		F44CD58F1D858685003BD80A /* AudioCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44CD58E1D858685003BD80A /* AudioCapture.swift */; };
+		F44CD5921D8594D0003BD80A /* AVCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44CD5911D8594D0003BD80A /* AVCapture.swift */; };
+		F44CD5951D8595FB003BD80A /* VideoCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44CD5941D8595FB003BD80A /* VideoCapture.swift */; };
 		F4D799761D83EF81006A5D8D /* VTCompressionSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D799751D83EF81006A5D8D /* VTCompressionSession.swift */; };
 		F4D799781D83F36C006A5D8D /* CMVideoFormatDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D799771D83F36C006A5D8D /* CMVideoFormatDescription.swift */; };
 		F4D7997A1D83F950006A5D8D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D799791D83F950006A5D8D /* AppDelegate.swift */; };
@@ -73,6 +76,9 @@
 		841399F916B1842B00FAD610 /* RTSPMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RTSPMessage.m; sourceTree = "<group>"; };
 		846119C516D3BF8D00468D98 /* CameraServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraServer.h; sourceTree = "<group>"; };
 		846119C616D3BF8D00468D98 /* CameraServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CameraServer.m; sourceTree = "<group>"; };
+		F44CD58E1D858685003BD80A /* AudioCapture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AudioCapture.swift; path = AudioCapture/AudioCapture.swift; sourceTree = "<group>"; };
+		F44CD5911D8594D0003BD80A /* AVCapture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVCapture.swift; sourceTree = "<group>"; };
+		F44CD5941D8595FB003BD80A /* VideoCapture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = VideoCapture.swift; path = VideoCapture/VideoCapture.swift; sourceTree = "<group>"; };
 		F48866E91D713F61004E5CDA /* Encoder Demo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Encoder Demo-Bridging-Header.h"; sourceTree = "<group>"; };
 		F4D799751D83EF81006A5D8D /* VTCompressionSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = VTCompressionSession.swift; path = AVEncoderVideoToolbox/VTCompressionSession.swift; sourceTree = "<group>"; };
 		F4D799771D83F36C006A5D8D /* CMVideoFormatDescription.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CMVideoFormatDescription.swift; path = AVEncoderVideoToolbox/CMVideoFormatDescription.swift; sourceTree = "<group>"; };
@@ -144,12 +150,15 @@
 		841255A616A035E3001749D9 /* Encoder Demo */ = {
 			isa = PBXGroup;
 			children = (
+				F44CD5931D8595EB003BD80A /* VideoCapture */,
+				F44CD58D1D858517003BD80A /* AudioCapture */,
 				F4D799791D83F950006A5D8D /* AppDelegate.swift */,
 				841255B816A035E3001749D9 /* MainStoryboard.storyboard */,
 				841255BE16A035E3001749D9 /* EncoderDemoViewController.h */,
 				841255BF16A035E3001749D9 /* EncoderDemoViewController.m */,
 				846119C516D3BF8D00468D98 /* CameraServer.h */,
 				846119C616D3BF8D00468D98 /* CameraServer.m */,
+				F44CD5911D8594D0003BD80A /* AVCapture.swift */,
 				841255DD16A85477001749D9 /* RTSP */,
 				841255D316A57847001749D9 /* AVEncoder */,
 				F48866E81D713F2B004E5CDA /* AVEncoderVideoToolbox */,
@@ -192,6 +201,22 @@
 				841399F916B1842B00FAD610 /* RTSPMessage.m */,
 			);
 			name = RTSP;
+			sourceTree = "<group>";
+		};
+		F44CD58D1D858517003BD80A /* AudioCapture */ = {
+			isa = PBXGroup;
+			children = (
+				F44CD58E1D858685003BD80A /* AudioCapture.swift */,
+			);
+			name = AudioCapture;
+			sourceTree = "<group>";
+		};
+		F44CD5931D8595EB003BD80A /* VideoCapture */ = {
+			isa = PBXGroup;
+			children = (
+				F44CD5941D8595FB003BD80A /* VideoCapture.swift */,
+			);
+			name = VideoCapture;
 			sourceTree = "<group>";
 		};
 		F48866E81D713F2B004E5CDA /* AVEncoderVideoToolbox */ = {
@@ -322,6 +347,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				F4D799781D83F36C006A5D8D /* CMVideoFormatDescription.swift in Sources */,
+				F44CD5951D8595FB003BD80A /* VideoCapture.swift in Sources */,
+				F44CD5921D8594D0003BD80A /* AVCapture.swift in Sources */,
 				841255C016A035E3001749D9 /* EncoderDemoViewController.m in Sources */,
 				F4F4AEBD1D846B74006EA124 /* VTEncoder.swift in Sources */,
 				F4D7997D1D84047C006A5D8D /* VTEncoderVideoStreamer.swift in Sources */,
@@ -330,6 +357,7 @@
 				841255DC16A85472001749D9 /* RTSPServer.m in Sources */,
 				841255E516B14E45001749D9 /* RTSPClientConnection.mm in Sources */,
 				F4F4AEBA1D84656B006EA124 /* NALUtil.swift in Sources */,
+				F44CD58F1D858685003BD80A /* AudioCapture.swift in Sources */,
 				841399FA16B1842B00FAD610 /* RTSPMessage.m in Sources */,
 				846119C716D3BF8D00468D98 /* CameraServer.m in Sources */,
 				F4D799761D83EF81006A5D8D /* VTCompressionSession.swift in Sources */,
