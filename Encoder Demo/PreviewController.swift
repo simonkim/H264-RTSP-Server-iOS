@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import AVFoundation
+import AVCapture
 
 class PreviewController: UIViewController {
     
@@ -42,42 +44,47 @@ class PreviewController: UIViewController {
     @IBOutlet var resolutionSlider: UISlider!
     
     
-    private var captureServiceDelegate = AVCapture()
-    private var cameraServer: CameraServer {
-        return CameraServer.server()
+    private var captureClient = AVCaptureClientSimple()
+    private var captureService: AVCaptureService {
+        return AVCaptureService.service
     }
     
     private var currentPreset: Preset = .H720p1Mbps
+    fileprivate var rtspServer: RTSPServer?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        captureClient.dataDelegate = self
     }
     
     override func viewDidLayoutSubviews() {
-        let layer = CameraServer.server().getPreviewLayer()!
-        layer.frame = cameraView.bounds
+        let layer = captureService.previewLayer
+        layer?.frame = cameraView.bounds
     }
     
     override func willAnimateRotation(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {
         
-        let layer = CameraServer.server().getPreviewLayer()!
-        layer.connection.videoOrientation = .portrait
+        let layer = captureService.previewLayer
+        layer?.connection.videoOrientation = toInterfaceOrientation.videoOrientation
     }
     
     func startPreview() {
-        let layer = CameraServer.server().getPreviewLayer()!
-        layer.removeFromSuperlayer()
-        layer.connection.videoOrientation = .portrait
+        if let layer = captureService.previewLayer {
+            layer.removeFromSuperlayer()
+            layer.connection.videoOrientation = .portrait
+            
+            cameraView.layer.addSublayer(layer)
+        }
         
-        cameraView.layer.addSublayer(layer)
-        
-        serverAddress.text = CameraServer.server().getURL()
+        serverAddress.text = "rtsp://\(RTSPServer.getIPAddress())/"
     }
     
     func changeResolution(preset: Preset) {
-        captureServiceDelegate.videoCapture.preferredSessionPreset = preset.videoPreset()
-        captureServiceDelegate.videoCapture.preferredBitrate = preset.bitrate()
-        cameraServer.reconfigure()
+        captureClient.videoCapture.set(value: preset.videoPreset(), forKey: .AVCaptureSessionPreset)
+        captureClient.videoCapture.set(value: preset.bitrate(), forKey: .bitrate)
+        
+        captureService.reconfigure()
     }
     
     // MARK: Actions
@@ -96,12 +103,101 @@ class PreviewController: UIViewController {
     func change(activeState: Bool) {
         if activeState {
             // foreground from background
-            cameraServer.delegate = captureServiceDelegate
-            cameraServer.startup()
+            captureService.serviceClient = captureClient
+            captureService.start()
             startPreview()
         } else {
             // background
-            cameraServer.shutdown()
+            captureService.stop()
         }
+    }
+    
+    // MARK: AVCaptureClientDataDelegate
+    var paramSets: H264ParameterSets? = nil
+    var bpsMeter: BitrateMeasure = BitrateMeasure()
+    
+
+}
+
+extension PreviewController: AVCaptureClientDataDelegate {
+
+    private func paramSets(from sampleBuffer:CMSampleBuffer) -> H264ParameterSets?
+    {
+        var result: H264ParameterSets? = nil
+        if let formatDescription = sampleBuffer.formatDescription {
+            if formatDescription.mediaSubType == kCMVideoCodecType_H264 {
+                result = H264ParameterSets(withFormatDescription: formatDescription)
+            }
+        }
+        return result
+    }
+    
+    func client(client: AVCaptureClient, output sampleBuffer: CMSampleBuffer )
+    {
+        if client.mediaType == kCMMediaType_Video {
+            if paramSets == nil {
+                if let ps = paramSets(from: sampleBuffer) {
+                    paramSets = ps
+                    self.rtspServer = RTSPServer.setupListener(ps.avcC as Data!)
+                }
+            }
+            output(videoSample: sampleBuffer)
+        } else if client.mediaType == kCMMediaType_Audio {
+            output(audioSample: sampleBuffer)
+        }
+    }
+    
+    func output(videoSample sampleBuffer: CMSampleBuffer)
+    {
+        guard let paramSets = paramSets else {
+            return
+        }
+        
+        if let bb = CMSampleBufferGetDataBuffer(sampleBuffer),
+            let rtspServer = rtspServer {
+            
+            let pts = CMSampleBufferGetPresentationTimeStamp(sampleBuffer).seconds
+            let dataArray = bb.NALUnits(headerLength: Int(paramSets.NALHeaderLength))
+            
+            _ = self.bpsMeter.measure(dataArray: dataArray, pts: pts)
+            
+            rtspServer.bitrate = Int32(self.bpsMeter.bps)
+            rtspServer.onVideoData(dataArray, time: pts)
+        }
+    }
+    
+    func output(audioSample sampleBuffer: CMSampleBuffer)
+    {
+        // audio samples
+    }
+}
+
+
+extension UIInterfaceOrientation {
+    var videoOrientation: AVCaptureVideoOrientation
+    {
+        var result: AVCaptureVideoOrientation = .landscapeLeft
+        
+        switch(self) {
+        case .portrait:
+            result = .portrait
+            break
+            
+        case .portraitUpsideDown:
+            result = .portraitUpsideDown
+            break
+            
+        case .landscapeLeft:
+            result = .landscapeLeft
+            break
+            
+        case .landscapeRight:
+            result = .landscapeRight
+            break
+        default:
+            break
+        }
+        
+        return result
     }
 }

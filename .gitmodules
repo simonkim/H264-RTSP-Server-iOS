@@ -1,0 +1,3 @@
+[submodule "AVCapture"]
+	path = AVCapture
+	url = https://github.com/simonkim/AVCapture.git
