@@ -11,14 +11,21 @@ import Foundation
 class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, CaptureImplementation {
     
     var preferredDevicePosition = AVCaptureDevicePosition.back
-    var preferredSessionPreset = AVCaptureSessionPreset1920x1080
-    var videoStreamer = VTEncoderVideoStreamer()
+    var preferredSessionPreset = AVCaptureSessionPreset1280x720
+    var preferredBitrate: Int = 1024 * 1024
+    var videoStreamer: VTEncoderVideoStreamer
     var videoSize = CGSize(width: 1920, height: 1080)
     
     private static var captureQueue: DispatchQueue = {
         return DispatchQueue(label:"video-capture")
     }()
     
+    private var input: AVCaptureDeviceInput? = nil
+    private var output: AVCaptureVideoDataOutput? = nil
+    
+    override init() {
+        videoStreamer = VTEncoderVideoStreamer(preferredBitrate: preferredBitrate)
+    }
     
     func configure(with session:AVCaptureSession) {
         
@@ -41,14 +48,25 @@ class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, Capt
                     let height = output.videoSettings["Height"] as? Int {
                     videoSize = CGSize(width: width, height: height)
                 }
+
                 videoStreamer.videoSize = videoSize
                 
                 output.setSampleBufferDelegate(self, queue: VideoCapture.captureQueue)
-                
+
+                self.input = input
+                self.output = output
             } catch let error as NSError {
                 print(error)
             }
         }
+    }
+    
+    func reset(with session:AVCaptureSession)
+    {
+        session.removeOutput(output)
+        session.removeInput(input)
+        videoStreamer.stop()
+        videoStreamer = VTEncoderVideoStreamer(preferredBitrate: preferredBitrate)
     }
     
     func stop() {

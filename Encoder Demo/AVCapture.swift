@@ -12,6 +12,7 @@ import Foundation
 protocol CaptureImplementation {
     func configure(with session:AVCaptureSession)
     func stop()
+    func reset(with session:AVCaptureSession)
 }
 
 class AVCapture: CaptureServiceDelegate {
@@ -22,6 +23,11 @@ class AVCapture: CaptureServiceDelegate {
     func captureService(_ service: CameraServer!, configureSession session: AVCaptureSession!) {
         audioCapture.configure(with:session)
         videoCapture.configure(with:session)
+    }
+    
+    func captureService(_ service: CameraServer!, resetSessionForReconfigure session: AVCaptureSession!) {
+        audioCapture.reset(with:session)
+        videoCapture.reset(with:session)
     }
     
     func captureServiceDidStop(_ service: CameraServer!) {

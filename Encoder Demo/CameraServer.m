@@ -50,12 +50,8 @@ static CameraServer* theServer;
         
         // create capture device with video input
         _session = [[AVCaptureSession alloc] init];
-        [_session beginConfiguration];
-        
-        [self.delegate captureService:self configureSession:_session];
-        
-        [_session commitConfiguration];
-        
+
+        [self configureSession:_session];
 
         // start capture and a preview layer
         [_session startRunning];
@@ -64,6 +60,21 @@ static CameraServer* theServer;
         _preview = [AVCaptureVideoPreviewLayer layerWithSession:_session];
         _preview.videoGravity = AVLayerVideoGravityResizeAspectFill;
     }
+}
+
+- (void) configureSession:(AVCaptureSession *) session
+{
+    [session beginConfiguration];
+    
+    [self.delegate captureService:self configureSession:session];
+    
+    [session commitConfiguration];
+}
+
+- (void) reconfigure
+{
+    [self.delegate captureService:self resetSessionForReconfigure:_session];
+    [self configureSession:_session];
 }
 
 - (void) shutdown

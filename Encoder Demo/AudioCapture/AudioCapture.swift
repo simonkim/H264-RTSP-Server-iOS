@@ -14,6 +14,9 @@ class AudioCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, Capt
         return DispatchQueue(label:"audio-capture")
     }()
     
+    private var input: AVCaptureDeviceInput? = nil
+    private var output: AVCaptureAudioDataOutput? = nil
+    
     func configure(with session: AVCaptureSession) {
         
         if let devices = AVCaptureDevice.devices(withMediaType: AVMediaTypeAudio),
@@ -26,14 +29,22 @@ class AudioCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate, Capt
                 output.setSampleBufferDelegate(self, queue: AudioCapture.captureQueue)
                 session.addOutput(output)
             
+                self.input = input
+                self.output = output
             } catch let error as NSError {
                 print(error)
             }
         }
     }
+
+    func reset(with session:AVCaptureSession)
+    {
+        session.removeOutput(output)
+        session.removeInput(input)        
+    }
     
     internal func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!) {
-        print(sampleBuffer)
+        //print(sampleBuffer)
     }
     
     func stop() {

@@ -32,9 +32,10 @@ class VTEncoderVideoStreamer {
     var parameterSets: H264ParameterSets?
     
     var bpsMeter: BitrateMeasure = BitrateMeasure()
+    var preferredBitrate: Int = 1024 * 1024
     
     lazy var encoder: VTEncoder = {
-        let encoder = VTEncoder(width: Int32(self.videoSize.width), height: Int32(self.videoSize.height))
+        let encoder = VTEncoder(width: Int32(self.videoSize.width), height: Int32(self.videoSize.height), bitrate: self.preferredBitrate)
         encoder.onEncoded = { status, infoFlags, sampleBuffer in
             if let sampleBuffer = sampleBuffer,
                 let bb = CMSampleBufferGetDataBuffer(sampleBuffer),
@@ -60,6 +61,9 @@ class VTEncoderVideoStreamer {
         return encoder
     }()
     
+    init(preferredBitrate: Int) {
+        self.preferredBitrate = preferredBitrate
+    }
     
     func add(sampleBuffer: CMSampleBuffer!) {
         encoder.encode(sampleBuffer: sampleBuffer)
@@ -67,6 +71,7 @@ class VTEncoderVideoStreamer {
     
     func stop() {
         encoder.close()
+        rtspServer?.shutdownServer()
     }
 
 }

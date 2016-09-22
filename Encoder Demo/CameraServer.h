@@ -19,6 +19,7 @@
 @protocol CaptureServiceDelegate
 - (void) captureService:(CameraServer *) service configureSession:(AVCaptureSession *) session;
 - (void) captureServiceDidStop:(CameraServer *) service;
+- (void) captureService:(CameraServer *)service resetSessionForReconfigure:(AVCaptureSession *)session;
 @end
 
 @interface CameraServer : NSObject
@@ -26,6 +27,7 @@
 
 + (CameraServer*) server NS_SWIFT_NAME(server());
 - (void) startup;
+- (void) reconfigure;
 - (void) shutdown;
 - (NSString*) getURL;
 - (AVCaptureVideoPreviewLayer*) getPreviewLayer;

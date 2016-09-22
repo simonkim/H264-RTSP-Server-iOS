@@ -80,13 +80,13 @@ class VTEncoder {
     var onEncoded: VideoToolbox.VTCompressionOutputHandler? = nil
     var onParameterSets: ((H264ParameterSets)->Void)? = nil
     
-    static let defaultBitrate: Int = 2048 * 1024
+    static let defaultBitrate: Int = 1024 * 1024
     
     private var timingInfo: CMSampleTimingInfo = CMSampleTimingInfo()
     
     init(width:Int32, height:Int32, bitrate:Int = defaultBitrate) {
         session = VTCompressionSession.create(width: width, height: height)
-        
+        print("Encoder \(width) x \(height) @ \(bitrate)")
         if let session = session {
             VTSessionSetProperty(session, kVTCompressionPropertyKey_H264EntropyMode, kVTH264EntropyMode_CAVLC)
             VTSessionSetProperty(session, kVTCompressionPropertyKey_RealTime, true as CFTypeRef)
