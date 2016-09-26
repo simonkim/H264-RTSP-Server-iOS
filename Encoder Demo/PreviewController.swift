@@ -45,9 +45,9 @@ class PreviewController: UIViewController {
     
     
     private var captureClient = AVCaptureClientSimple()
-    private var captureService: AVCaptureService {
-        return AVCaptureService.service
-    }
+    lazy private var captureService: AVCaptureService = {
+        return AVCaptureService(client: self.captureClient)
+    }()
     
     private var currentPreset: Preset = .H720p1Mbps
     fileprivate var rtspServer: RTSPServer?
@@ -103,8 +103,7 @@ class PreviewController: UIViewController {
     func change(activeState: Bool) {
         if activeState {
             // foreground from background
-            captureService.serviceClient = captureClient
-            captureService.start()
+            _ = captureService.start()
             startPreview()
         } else {
             // background
@@ -116,7 +115,6 @@ class PreviewController: UIViewController {
     var paramSets: H264ParameterSets? = nil
     var bpsMeter: BitrateMeasure = BitrateMeasure()
     
-
 }
 
 extension PreviewController: AVCaptureClientDataDelegate {
@@ -146,6 +144,11 @@ extension PreviewController: AVCaptureClientDataDelegate {
             output(audioSample: sampleBuffer)
         }
     }
+    
+    public func client(client: AVCaptureClient, didConfigureVideoSize videoSize: CGSize) {
+
+    }
+    
     
     func output(videoSample sampleBuffer: CMSampleBuffer)
     {
