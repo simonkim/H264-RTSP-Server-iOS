@@ -146,7 +146,12 @@ extension PreviewController: AVCaptureClientDataDelegate {
     }
     
     public func client(client: AVCaptureClient, didConfigureVideoSize videoSize: CGSize) {
-
+        if let rtspServer = rtspServer {
+            rtspServer.shutdownServer()
+            self.rtspServer = nil
+            self.paramSets = nil
+            self.bpsMeter = BitrateMeasure()
+        }
     }
     
     
