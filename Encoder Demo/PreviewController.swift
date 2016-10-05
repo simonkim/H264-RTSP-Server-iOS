@@ -59,6 +59,7 @@ class PreviewController: UIViewController {
     @IBOutlet var cameraView: UIView!
     @IBOutlet var serverAddress: UILabel!
     @IBOutlet var resolutionSlider: UISlider!
+    @IBOutlet var controlView: UIView!
     @IBOutlet var labelVideoFormat: UILabel!
         
     private var captureClient = AVCaptureClientSimple()
@@ -74,6 +75,12 @@ class PreviewController: UIViewController {
         
         captureClient.dataDelegate = self
         captureClient.options = currentPreset.captureClientOptions
+        
+        var gesture = UITapGestureRecognizer(target: self, action: #selector(didTap(_:)))
+        view.addGestureRecognizer(gesture)
+        
+        gesture = UITapGestureRecognizer(target: self, action: #selector(didTap(_:)))
+        controlView.addGestureRecognizer(gesture)
     }
     
     override func viewDidLayoutSubviews() {
@@ -113,6 +120,16 @@ class PreviewController: UIViewController {
                 self.changeResolution(preset: preset)
             }
             currentPreset = preset
+        }
+    }
+
+    // MARK: Gesture
+    func didTap(_ gestureRecognizer: UITapGestureRecognizer)
+    {
+        if gestureRecognizer.view == self.view {
+            controlView.isHidden = false
+        } else if gestureRecognizer.view == controlView {
+            controlView.isHidden = true
         }
     }
     

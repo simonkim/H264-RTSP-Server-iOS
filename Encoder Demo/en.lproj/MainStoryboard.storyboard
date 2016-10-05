@@ -115,6 +115,7 @@
                     </view>
                     <connections>
                         <outlet property="cameraView" destination="DdC-9V-B2a" id="T4t-Ic-nap"/>
+                        <outlet property="controlView" destination="xY3-pT-Ntd" id="t8q-Ht-ls4"/>
                         <outlet property="labelVideoFormat" destination="ztq-tg-gP2" id="IW7-4Q-XII"/>
                         <outlet property="resolutionSlider" destination="63T-wc-sLL" id="YQz-WV-AXp"/>
                         <outlet property="serverAddress" destination="EOB-Rd-ssE" id="8yM-V4-c5g"/>
