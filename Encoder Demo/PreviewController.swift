@@ -51,7 +51,7 @@ class PreviewController: UIViewController {
                 .videoDimensions(videoDimensions),
                 .videoFrameRate(frameRate),
                 .videoBitrate(bitrate),
-                .encodeVideo(true)
+                .encodeVideo(false)
             ]
         }
     }
@@ -67,7 +67,7 @@ class PreviewController: UIViewController {
         return AVCaptureService(client: self.captureClient)
     }()
     
-    private var currentPreset: Preset = .H720p1Mbps
+    fileprivate var currentPreset: Preset = .H720p1Mbps
     fileprivate var rtspServer: RTSPServer?
     
     override func viewDidLoad() {
@@ -149,6 +149,10 @@ class PreviewController: UIViewController {
     var paramSets: H264ParameterSets? = nil
     var bpsMeter: BitrateMeasure = BitrateMeasure()
     
+    var videoEncoder: VTEncoder? = nil
+    
+    let skipVideoEncodingEvery: Int = 1
+    var skipCounter: Int = 0
 }
 
 extension PreviewController: AVCaptureClientDataDelegate {
@@ -167,13 +171,12 @@ extension PreviewController: AVCaptureClientDataDelegate {
     func client(client: AVCaptureClient, output sampleBuffer: CMSampleBuffer )
     {
         if client.mediaType == kCMMediaType_Video {
-            if paramSets == nil {
-                if let ps = paramSets(from: sampleBuffer) {
-                    paramSets = ps
-                    self.rtspServer = RTSPServer.setupListener(ps.avcC as Data!)
-                }
+            if skipCounter == 0 {
+                videoEncoder?.encode(sampleBuffer: sampleBuffer)
+                skipCounter = skipVideoEncodingEvery
+            } else {
+                skipCounter -= 1
             }
-            output(videoSample: sampleBuffer)
         } else if client.mediaType == kCMMediaType_Audio {
             output(audioSample: sampleBuffer)
         }
@@ -186,6 +189,23 @@ extension PreviewController: AVCaptureClientDataDelegate {
             self.paramSets = nil
             self.bpsMeter = BitrateMeasure()
         }
+        
+        self.videoEncoder?.close()
+        skipCounter = 0
+        
+        let encoder = VTEncoder(width: Int32(videoSize.width), height: Int32(videoSize.height), bitrate: currentPreset.bitrate)
+        encoder.onEncoded = { status, infoFlags, sampleBuffer in
+            if let sampleBuffer = sampleBuffer, status == noErr {
+                if self.paramSets == nil {
+                    if let ps = self.paramSets(from: sampleBuffer) {
+                        self.paramSets = ps
+                        self.rtspServer = RTSPServer.setupListener(ps.avcC as Data!)
+                    }
+                }
+                self.output(videoSample: sampleBuffer)
+            }
+        }
+        self.videoEncoder = encoder
         
         DispatchQueue.main.async {
             self.labelVideoFormat.text = String(format:"%dx%d", Int(videoSize.width), Int(videoSize.height))
