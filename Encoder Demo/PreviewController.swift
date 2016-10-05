@@ -65,8 +65,7 @@ class PreviewController: UIViewController {
     @IBOutlet var leftPOV: UIView!
     @IBOutlet var rightPOV: UIView!
     
-    fileprivate var stereoViewEnabled = false
-    fileprivate var rightPOVLayer: AVSampleBufferDisplayLayer? = nil
+    fileprivate var stereoViewControl: StereoViewControl?
     
     private var captureClient = AVCaptureClientSimple()
     lazy fileprivate var captureService: AVCaptureService = {
@@ -90,7 +89,11 @@ class PreviewController: UIViewController {
     }
     
     override func viewDidLayoutSubviews() {
-        updatePreviewLayout(stereoView: stereoViewEnabled)
+        if stereoViewControl != nil && stereoViewControl!.enabled {
+            stereoViewControl!.updatePreviewLayout()
+        } else {
+            updatePreviewLayout()
+        }
     }
     
     override func willAnimateRotation(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {
@@ -105,6 +108,14 @@ class PreviewController: UIViewController {
             cameraView.layer.addSublayer(previewLayer)
         }
         serverAddress.text = "rtsp://\(RTSPServer.getIPAddress())/"
+        
+        if let previewLayer = captureService.previewLayer {
+            stereoViewControl = StereoViewControl(previewLayer: previewLayer,
+                                                  leftPOV: leftPOV,
+                                                  rightPOV: rightPOV,
+                                                  masterClock: captureService.masterClock)
+        }
+
     }
     
     func changeResolution(preset: Preset) {
@@ -140,8 +151,13 @@ class PreviewController: UIViewController {
     }
     
     @IBAction func toggleStereoView(_ sender: UISwitch) {
-        
-        setStereoView(enabled: sender.isOn)
+        if stereoViewControl != nil {
+            stereoViewControl!.enabled = sender.isOn
+        }
+        if !sender.isOn && captureService.previewLayer != nil{
+            cameraView.layer.addSublayer(captureService.previewLayer!)
+            updatePreviewLayout()
+        }
     }
     
     // MARK: API
@@ -182,6 +198,7 @@ extension PreviewController: AVCaptureClientDataDelegate {
     func client(client: AVCaptureClient, output sampleBuffer: CMSampleBuffer )
     {
         if client.mediaType == kCMMediaType_Video {
+            stereoViewControl?.enqueue(sampleBuffer)
             if skipCounter == 0 {
                 videoEncoder?.encode(sampleBuffer: sampleBuffer)
                 skipCounter = skipVideoEncodingEvery
@@ -276,64 +293,5 @@ extension UIInterfaceOrientation {
         }
         
         return result
-    }
-}
-
-// MARK: Stereo View
-extension PreviewController {
-    func createSampleBufferDisplayLayer(rect: CGRect) -> AVSampleBufferDisplayLayer {
-        
-        let layer = AVSampleBufferDisplayLayer()
-        layer.bounds = rect
-        layer.videoGravity = AVLayerVideoGravityResizeAspect
-        return layer
-    }
-    
-    func updatePreviewLayout(stereoView: Bool) {
-        
-        if stereoView {
-            captureService.previewLayer?.frame = leftPOV.bounds
-            rightPOVLayer?.frame = rightPOV.bounds
-        } else {
-            updatePreviewLayout()
-        }
-    }
-    
-    func setStereoView(enabled: Bool) {
-        
-        guard let previewLayer = captureService.previewLayer else {
-            return
-        }
-        if stereoViewEnabled == enabled {
-            return
-        }
-        
-        let superlayer: CALayer
-        if enabled {
-            superlayer = leftPOV.layer
-            
-            if rightPOVLayer == nil {
-                let rightLayer = createSampleBufferDisplayLayer(rect: rightPOV.bounds)
-                rightPOV.layer.addSublayer(rightLayer)
-                var timebase: CMTimebase?
-                CMTimebaseCreateWithMasterClock(kCFAllocatorDefault, captureService.masterClock, &timebase)
-                if let timebase = timebase {
-                    CMTimebaseSetRate(timebase, 1.0)
-                    CMTimebaseSetTime(timebase, CMClockGetTime(captureService.masterClock))
-                    rightLayer.controlTimebase = timebase
-                }
-                self.rightPOVLayer = rightLayer
-            }
-        } else {
-            superlayer = cameraView.layer
-        }
-        leftPOV.isHidden = !enabled
-        rightPOV.isHidden = !enabled
-        
-        previewLayer.removeFromSuperlayer()
-        superlayer.addSublayer(previewLayer)
-        
-        stereoViewEnabled = enabled
-        updatePreviewLayout(stereoView: stereoViewEnabled)
     }
 }

@@ -26,6 +26,7 @@
 		F468C6F41D93FF420030E9F3 /* AVCapture.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F468C6E81D93FEFD0030E9F3 /* AVCapture.framework */; };
 		F468C6F51D93FF420030E9F3 /* AVCapture.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F468C6E81D93FEFD0030E9F3 /* AVCapture.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F4D7997A1D83F950006A5D8D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D799791D83F950006A5D8D /* AppDelegate.swift */; };
+		F4ECB1991DA4D73E00F2E5D6 /* StereoViewControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4ECB1981DA4D73E00F2E5D6 /* StereoViewControl.swift */; };
 		F4F4AEAE1D845E82006EA124 /* RTSPServerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F4AEAD1D845E82006EA124 /* RTSPServerTest.swift */; };
 /* End PBXBuildFile section */
 
@@ -101,6 +102,7 @@
 		F468C6E21D93FEFD0030E9F3 /* AVCapture.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AVCapture.xcodeproj; path = AVCapture/AVCapture.xcodeproj; sourceTree = "<group>"; };
 		F48866E91D713F61004E5CDA /* Encoder Demo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Encoder Demo-Bridging-Header.h"; sourceTree = "<group>"; };
 		F4D799791D83F950006A5D8D /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		F4ECB1981DA4D73E00F2E5D6 /* StereoViewControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StereoViewControl.swift; sourceTree = "<group>"; };
 		F4F4AEAB1D845E81006EA124 /* RTSPServerTest.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RTSPServerTest.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4F4AEAD1D845E82006EA124 /* RTSPServerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RTSPServerTest.swift; sourceTree = "<group>"; };
 		F4F4AEAF1D845E82006EA124 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -170,6 +172,7 @@
 				F4D799791D83F950006A5D8D /* AppDelegate.swift */,
 				841255B816A035E3001749D9 /* MainStoryboard.storyboard */,
 				F4292F9F1D93A09100FA1299 /* PreviewController.swift */,
+				F4ECB1981DA4D73E00F2E5D6 /* StereoViewControl.swift */,
 				841255DD16A85477001749D9 /* RTSP */,
 				841255D316A57847001749D9 /* AVEncoder */,
 				841255A716A035E3001749D9 /* Supporting Files */,
@@ -364,6 +367,7 @@
 				F4D7997A1D83F950006A5D8D /* AppDelegate.swift in Sources */,
 				F4292FA01D93A09100FA1299 /* PreviewController.swift in Sources */,
 				841255DC16A85472001749D9 /* RTSPServer.m in Sources */,
+				F4ECB1991DA4D73E00F2E5D6 /* StereoViewControl.swift in Sources */,
 				841255E516B14E45001749D9 /* RTSPClientConnection.mm in Sources */,
 				841399FA16B1842B00FAD610 /* RTSPMessage.m in Sources */,
 			);
