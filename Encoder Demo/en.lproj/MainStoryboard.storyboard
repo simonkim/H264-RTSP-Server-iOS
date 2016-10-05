@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="15G1004" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="2">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11521.1" systemVersion="15G1004" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="2">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11517.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -21,71 +21,101 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DdC-9V-B2a">
                                 <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </view>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Server Address" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EOB-Rd-ssE">
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="21" id="OPm-Ix-sDX"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
-                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <nil key="highlightedColor"/>
-                                <color key="shadowColor" red="0.33333333333333331" green="0.33333333333333331" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <size key="shadowOffset" width="0.0" height="0.0"/>
-                            </label>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xY3-pT-Ntd" userLabel="Control View">
-                                <frame key="frameInset" minX="8" minY="38" width="359" height="69"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xY3-pT-Ntd" userLabel="Control View">
                                 <subviews>
-                                    <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="1" minValue="0.0" maxValue="2" continuous="NO" translatesAutoresizingMaskIntoConstraints="NO" id="63T-wc-sLL">
-                                        <frame key="frameInset" minX="-2" minY="8" width="363" height="31"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="1" minValue="0.0" maxValue="2" continuous="NO" translatesAutoresizingMaskIntoConstraints="NO" id="63T-wc-sLL">
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="30" id="CNH-rY-9d8"/>
+                                        </constraints>
                                         <connections>
                                             <action selector="resolutionSliderTouchUp:" destination="2" eventType="touchUpOutside" id="QkZ-SC-yTa"/>
                                             <action selector="resolutionSliderTouchUp:" destination="2" eventType="touchUpInside" id="dn9-vp-5Mn"/>
                                         </connections>
                                     </slider>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="480p" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="90J-CH-92h">
-                                        <frame key="frameInset" minX="8" minY="39" width="42" height="21"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="480p" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="90J-CH-92h">
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="21" id="0SJ-8F-9hT"/>
+                                        </constraints>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
                                         <color key="shadowColor" cocoaTouchSystemColor="darkTextColor"/>
                                         <size key="shadowOffset" width="1" height="1"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="720p" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="yUy-II-mVE">
-                                        <frame key="frameInset" minX="158" minY="39" width="40" height="21"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="720p" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="yUy-II-mVE">
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="21" id="4Uu-TV-tzS"/>
+                                        </constraints>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
                                         <color key="shadowColor" cocoaTouchSystemColor="darkTextColor"/>
                                         <size key="shadowOffset" width="1" height="1"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="1080p" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="wYD-hL-A2E">
-                                        <frame key="frameInset" minX="302" minY="39" width="49" height="21"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1080p" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="wYD-hL-A2E">
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="21" id="6Lr-2R-Egh"/>
+                                        </constraints>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
                                         <color key="shadowColor" cocoaTouchSystemColor="darkTextColor"/>
                                         <size key="shadowOffset" width="1" height="1"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Video dimensions and frame rate" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ztq-tg-gP2">
+                                        <frame key="frameInset" minY="98" width="359" height="21"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <nil key="highlightedColor"/>
+                                        <color key="shadowColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                        <size key="shadowOffset" width="1" height="1"/>
+                                    </label>
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Server Address" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EOB-Rd-ssE">
+                                        <constraints>
+                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="21" id="3EJ-LT-ZMb"/>
+                                            <constraint firstAttribute="height" constant="21" id="OPm-Ix-sDX"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                        <color key="shadowColor" red="0.33333333333333331" green="0.33333333333333331" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <size key="shadowOffset" width="0.0" height="0.0"/>
                                     </label>
                                 </subviews>
+                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.14509698275862068" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstItem="90J-CH-92h" firstAttribute="top" secondItem="63T-wc-sLL" secondAttribute="bottom" constant="1" id="A9e-8m-s8u"/>
+                                    <constraint firstItem="wYD-hL-A2E" firstAttribute="top" secondItem="63T-wc-sLL" secondAttribute="bottom" constant="1" id="CF1-gu-dNO"/>
+                                    <constraint firstItem="EOB-Rd-ssE" firstAttribute="top" secondItem="xY3-pT-Ntd" secondAttribute="top" constant="8" id="Ddn-4Y-np5"/>
+                                    <constraint firstItem="63T-wc-sLL" firstAttribute="top" secondItem="EOB-Rd-ssE" secondAttribute="bottom" constant="8" id="GI7-eI-GoC"/>
+                                    <constraint firstItem="EOB-Rd-ssE" firstAttribute="leading" secondItem="xY3-pT-Ntd" secondAttribute="leading" id="JBn-JH-glM"/>
+                                    <constraint firstAttribute="height" constant="168" id="Kbl-uI-aoK"/>
+                                    <constraint firstAttribute="trailing" secondItem="63T-wc-sLL" secondAttribute="trailing" id="RgW-HK-WHy"/>
+                                    <constraint firstAttribute="trailing" secondItem="EOB-Rd-ssE" secondAttribute="trailing" id="hc9-lu-3Xl"/>
+                                    <constraint firstAttribute="trailing" secondItem="wYD-hL-A2E" secondAttribute="trailing" constant="8" id="pla-nI-biA"/>
+                                    <constraint firstItem="90J-CH-92h" firstAttribute="leading" secondItem="xY3-pT-Ntd" secondAttribute="leading" constant="8" id="raJ-Rp-zIT"/>
+                                    <constraint firstItem="yUy-II-mVE" firstAttribute="centerX" secondItem="xY3-pT-Ntd" secondAttribute="centerX" id="s1G-30-dVz"/>
+                                    <constraint firstItem="63T-wc-sLL" firstAttribute="leading" secondItem="xY3-pT-Ntd" secondAttribute="leading" id="sY6-Pf-yzl"/>
+                                    <constraint firstItem="yUy-II-mVE" firstAttribute="top" secondItem="63T-wc-sLL" secondAttribute="bottom" constant="1" id="umf-Md-ZIz"/>
+                                </constraints>
                             </view>
                         </subviews>
                         <color key="backgroundColor" red="0.66666666666666663" green="0.66666666666666663" blue="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="DdC-9V-B2a" firstAttribute="centerX" secondItem="EOB-Rd-ssE" secondAttribute="centerX" id="BRF-jl-Tdr"/>
+                            <constraint firstItem="DdC-9V-B2a" firstAttribute="leading" secondItem="3" secondAttribute="leading" id="0NQ-uj-Gcr"/>
+                            <constraint firstAttribute="trailing" secondItem="DdC-9V-B2a" secondAttribute="trailing" id="2Qz-Gt-DOZ"/>
                             <constraint firstItem="DdC-9V-B2a" firstAttribute="top" secondItem="3" secondAttribute="topMargin" id="Czs-i9-u9H"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="EOB-Rd-ssE" secondAttribute="trailing" constant="4" id="DIP-XA-sdd"/>
-                            <constraint firstItem="EOB-Rd-ssE" firstAttribute="top" secondItem="3" secondAttribute="topMargin" constant="20" id="Oci-le-h49"/>
                             <constraint firstAttribute="trailing" secondItem="DdC-9V-B2a" secondAttribute="trailing" id="TyH-ts-tqM"/>
-                            <constraint firstItem="EOB-Rd-ssE" firstAttribute="leading" secondItem="3" secondAttribute="leadingMargin" constant="4" id="W1b-V4-fqi"/>
+                            <constraint firstAttribute="trailing" secondItem="xY3-pT-Ntd" secondAttribute="trailing" constant="8" id="U4I-ie-oGg"/>
                             <constraint firstAttribute="bottom" secondItem="DdC-9V-B2a" secondAttribute="bottom" id="d4K-M0-pTB"/>
+                            <constraint firstItem="xY3-pT-Ntd" firstAttribute="top" secondItem="3" secondAttribute="top" constant="8" id="uWM-Sk-qHY"/>
+                            <constraint firstItem="xY3-pT-Ntd" firstAttribute="leading" secondItem="3" secondAttribute="leading" constant="8" id="w8P-5z-gPI"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="cameraView" destination="DdC-9V-B2a" id="T4t-Ic-nap"/>
+                        <outlet property="labelVideoFormat" destination="ztq-tg-gP2" id="IW7-4Q-XII"/>
                         <outlet property="resolutionSlider" destination="63T-wc-sLL" id="YQz-WV-AXp"/>
                         <outlet property="serverAddress" destination="EOB-Rd-ssE" id="8yM-V4-c5g"/>
                     </connections>

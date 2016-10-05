@@ -22,30 +22,47 @@ class PreviewController: UIViewController {
             1024 * 1024,
             2048 * 1024
         ]
-        
-        static let videoPresets: [String] = [
-            AVCaptureSessionPreset640x480,
-            AVCaptureSessionPreset1280x720,
-            AVCaptureSessionPreset1920x1080
+
+        static let videoDimensionsList: [CMVideoDimensions] = [
+            CMVideoDimensions(width: 640, height: 480),
+            CMVideoDimensions(width: 1280, height: 720),
+            CMVideoDimensions(width: 1920, height: 1080),
         ]
         
-        func videoPreset() -> String {
-
-            return Preset.videoPresets[self.rawValue]
+        static let frameRates: [Float64] = [
+            60,
+            60,
+            60,
+        ]
+        
+        var bitrate: Int {
+            return Preset.bitrates[self.rawValue]
         }
         
-        func bitrate() -> Int {
-            return Preset.bitrates[self.rawValue]
+        var videoDimensions: CMVideoDimensions {
+            return Preset.videoDimensionsList[self.rawValue]
+        }
+        var frameRate: Float64 {
+            return Preset.frameRates[self.rawValue]
+        }
+        
+        var captureClientOptions: [AVCaptureClientOptionKey] {
+            return [
+                .videoDimensions(videoDimensions),
+                .videoFrameRate(frameRate),
+                .videoBitrate(bitrate),
+                .encodeVideo(true)
+            ]
         }
     }
     
     @IBOutlet var cameraView: UIView!
     @IBOutlet var serverAddress: UILabel!
     @IBOutlet var resolutionSlider: UISlider!
-    
-    
+    @IBOutlet var labelVideoFormat: UILabel!
+        
     private var captureClient = AVCaptureClientSimple()
-    lazy private var captureService: AVCaptureService = {
+    lazy fileprivate var captureService: AVCaptureService = {
         return AVCaptureService(client: self.captureClient)
     }()
     
@@ -56,11 +73,11 @@ class PreviewController: UIViewController {
         super.viewDidLoad()
         
         captureClient.dataDelegate = self
+        captureClient.options = currentPreset.captureClientOptions
     }
     
     override func viewDidLayoutSubviews() {
-        let layer = captureService.previewLayer
-        layer?.frame = cameraView.bounds
+        updatePreviewLayout()
     }
     
     override func willAnimateRotation(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {
@@ -70,21 +87,21 @@ class PreviewController: UIViewController {
     }
     
     func startPreview() {
-        if let layer = captureService.previewLayer {
-            layer.removeFromSuperlayer()
-            layer.connection.videoOrientation = .portrait
-            
-            cameraView.layer.addSublayer(layer)
-        }
         
+        if let previewLayer = captureService.previewLayer {
+            cameraView.layer.addSublayer(previewLayer)
+        }
         serverAddress.text = "rtsp://\(RTSPServer.getIPAddress())/"
     }
     
     func changeResolution(preset: Preset) {
-        captureClient.videoCapture.set(value: preset.videoPreset(), forKey: .AVCaptureSessionPreset)
-        captureClient.videoCapture.set(value: preset.bitrate(), forKey: .bitrate)
-        
+        captureClient.options = preset.captureClientOptions
         captureService.reconfigure()
+    }
+    
+    func updatePreviewLayout() {
+        let layer = captureService.previewLayer
+        layer?.frame = cameraView.bounds
     }
     
     // MARK: Actions
@@ -151,6 +168,10 @@ extension PreviewController: AVCaptureClientDataDelegate {
             self.rtspServer = nil
             self.paramSets = nil
             self.bpsMeter = BitrateMeasure()
+        }
+        
+        DispatchQueue.main.async {
+            self.labelVideoFormat.text = String(format:"%dx%d", Int(videoSize.width), Int(videoSize.height))
         }
     }
     
