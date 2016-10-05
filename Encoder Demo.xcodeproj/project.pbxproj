@@ -283,12 +283,10 @@
 				ORGANIZATIONNAME = "Geraint Davies";
 				TargetAttributes = {
 					8412559B16A035E3001749D9 = {
-						DevelopmentTeam = M7ULFZ4G22;
 						LastSwiftMigration = 0800;
 					};
 					F4F4AEAA1D845E81006EA124 = {
 						CreatedOnToolsVersion = 8.0;
-						DevelopmentTeam = M42CUUMFKC;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 8412559B16A035E3001749D9;
 					};
@@ -475,7 +473,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
-				DEVELOPMENT_TEAM = M7ULFZ4G22;
+				DEVELOPMENT_TEAM = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Encoder Demo/Encoder Demo-Prefix.pch";
 				INFOPLIST_FILE = "Encoder Demo/Encoder Demo-Info.plist";
@@ -494,7 +492,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
-				DEVELOPMENT_TEAM = M7ULFZ4G22;
+				DEVELOPMENT_TEAM = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Encoder Demo/Encoder Demo-Prefix.pch";
 				INFOPLIST_FILE = "Encoder Demo/Encoder Demo-Info.plist";
@@ -524,7 +522,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = M42CUUMFKC;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -564,7 +562,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = M42CUUMFKC;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
